@@ -49,6 +49,7 @@ class Tag:
     STRING = 8
     LIST = 9
     COMPOUND = 10
+    INT_ARRAY = 11
 
 
 # == Generic parsing functions ==
@@ -173,6 +174,23 @@ def read_tag_type_compound(f, assume_unnamed=False):
     return current
 
 
+def read_tag_type_int_array(f):
+    """
+    Expected byte array format:
+
+        TAG_Int length
+        <"length" bytes>
+    """
+
+    length = tag_functions[Tag.INT](f)
+
+    list = [ ]
+    for i in range(0, length):
+        list.append(tag_functions[Tag.INT](f))
+
+    return list
+
+
 # === Tag functions object ===
 
 # This object contains functions to parse all known tag types, accessible by `tag id`.
@@ -190,7 +208,8 @@ tag_functions = {
     Tag.BYTE_ARRAY: read_tag_type_byte_array,
     Tag.STRING: read_tag_type_string,
     Tag.LIST: read_tag_type_list,
-    Tag.COMPOUND: read_tag_type_compound
+    Tag.COMPOUND: read_tag_type_compound,
+    Tag.INT_ARRAY: read_tag_type_int_array
 }
 
 
